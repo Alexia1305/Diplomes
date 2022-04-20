@@ -13,17 +13,11 @@ code {
 }
 body{
 	background: #1a202c ;
-	display : flex;
-	justify-content: center;
 	align-items: center;
-	
-	flex-direction:column;
+
+
 }
 
-*{
-	font-family: sans-serif;
-	box-sizing: border-box;
-}
 
 form{
 	width: 500px;

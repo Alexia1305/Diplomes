@@ -162,7 +162,7 @@ const App = () => {
 				</div>
 			);
 		}
-		// Otherwise, we're good! Account exists. User can submit GIFs.
+		//  compte administrateur si portefeuille connecté .
 		else {
 			return (
 				<div className="connected-container">
@@ -182,14 +182,7 @@ const App = () => {
 							Submit
 						</button>
 					</form>
-					<div className="gif-grid">
-						{/* We use index as the key instead, also, the src is now item.gifLink */}
-						{gifList.map((item, index) => (
-							<div className="gif-item" key={index}>
-								<img src={item.gifLink} />
-							</div>
-						))}
-					</div>
+					
 				</div>
 			);
 		}
@@ -233,12 +226,53 @@ const App = () => {
   if(User){ return (
 
   <header style={{color:'white'}}>
-
+    <button onClick={() => setUser(false)} > X </button>
 		<div>
 			<h3>Rechercher un diplôme</h3>
 			<p>En fonction d'un nom, d'un prénom, d'une université et/ou d'une année</p>
 		</div>
 	// faire un formulaire react 
+    <div className="connected-container">
+					<form
+						onSubmit={event => {
+							event.preventDefault();
+							// ajouter ce que ca fait 
+						}}
+					>
+						<input
+							type="text"
+							placeholder="Nom"
+							value={inputValue}
+							onChange={onInputChange}
+						/>
+            <input
+							type="text"
+							placeholder="Prenom"
+							value={inputValue}
+							onChange={onInputChange}
+						/>
+            <input
+							type="text"
+							placeholder="Année"
+							value={inputValue}
+							onChange={onInputChange}
+						/>
+           
+						<button type="submit" className="cta-button submit-gif-button">
+							Valider
+						</button>
+					</form>
+      
+       // affichage 
+					<div className="gif-grid">
+						{/* We use index as the key instead, also, the src is now item.gifLink */}
+						{gifList.map((item, index) => (
+							<div className="gif-item" key={index}>
+								<p>{item.gifLink} </p>
+							</div>
+						))}
+					</div>
+				</div>
 			
   </header>
   )}
