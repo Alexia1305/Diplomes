@@ -24,7 +24,7 @@
       "args": []
     },
     {
-      "name": "addGif",
+      "name": "addDiplome",
       "accounts": [
         {
           "name": "baseAccount",
@@ -39,7 +39,7 @@
       ],
       "args": [
         {
-          "name": "gifLink",
+          "name": "diplomeVar",
           "type": "string"
         }
       ]
@@ -52,15 +52,21 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "totalGifs",
+            "name": "totalDiplomes",
             "type": "u64"
           },
           {
-            "name": "gifList",
+            "name": "diplomeList",
             "type": {
               "vec": {
                 "defined": "ItemStruct"
               }
+            }
+          },
+          {
+            "name": "autorise",
+            "type": {
+              "vec": "string"
             }
           }
         ]
@@ -74,7 +80,7 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "gifLink",
+            "name": "diplomeVar",
             "type": "string"
           },
           {

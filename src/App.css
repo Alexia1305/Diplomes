@@ -1,6 +1,6 @@
 .App {
   height: 100vh;
-  background-color: #1a202c;
+  background-color: #23798b;
   overflow: scroll;
   text-align: center;
 }
@@ -40,9 +40,9 @@
 }
 
 .cta-button {
-  height: 45px;
+ 
   border: 0;
-  width: auto;
+  width: auto
   padding-left: 40px;
   padding-right: 40px;
   border-radius: 10px;
@@ -54,11 +54,13 @@
 
 .connect-wallet-button {
   background: -webkit-linear-gradient(left, #60c657, #35aee2);
+  
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
+  
 }
 
-.submit-gif-button {
+.submit-diplome-button {
   background: -webkit-linear-gradient(left, #4e44ce, #35aee2);
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
@@ -87,7 +89,7 @@
   font-weight: bold;
 }
 
-.gif-grid {
+.diplome-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
   grid-gap: 1.5rem;
@@ -96,7 +98,7 @@
   padding: 0;
 }
 
-.gif-grid .gif-item {
+.diplome-grid .diplome-item {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -104,7 +106,7 @@
   align-self: center;
 }
 
-.gif-item img {
+.diplome-item img {
   width: 100%;
   height: 300px;
   border-radius: 10px;
@@ -127,4 +129,64 @@
 
 .connected-container button {
   height: 50px;
+}
+.form-control {
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	position: relative;
+}
+
+.form-control i {
+	visibility: hidden;
+	position: absolute;
+	top: 40px;
+	right: 10px;
+}
+
+.form-control.success i.fa-check-circle {
+	color: #2ecc71;
+	visibility: visible;
+}
+
+.form-control.error i.fa-exclamation-circle {
+	color: #e74c3c;
+	visibility: visible;
+}
+
+.form-control small {
+	color: #e74c3c;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	visibility: hidden;
+}
+
+.form-control.error small {
+	visibility: visible;
+}
+
+.form-control.success input {
+	border-color: #2ecc71;
+}
+
+.form-control.error input {
+	border-color: #e74c3c;
+}
+.form-control select {
+  color: #black;
+  border-radius: 5px; 
+  padding: 5px 10px; 
+  font-size: 18px;
+  border-color: #gray;
+  background-color: #white; 
+  margin: auto ;
+  margin-bottom: 10px;
+  position : relative;
+}
+img {
+  width: 400px;
+  margin: 50px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }

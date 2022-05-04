@@ -12,7 +12,7 @@ code {
     monospace;
 }
 body{
-	background: #1a202c ;
+	background-color: #23798b;
 	align-items: center;
 
 
@@ -103,6 +103,19 @@ a:hover{
 .titre2{
   color : white;
 }
-H3{
-  color : white;
+
+.header-container1{
+  display: flex;
+  justify-content: center;
+  
+}
+.formulaireRecherche{
+    display: flex;
+  justify-content: center;
+  margin-top:10vh;
+  
+}
+.inputFormulaire{
+  display:flex;
+  flex-direction: column;
 }

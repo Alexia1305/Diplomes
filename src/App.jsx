@@ -1,23 +1,27 @@
+//import 
+
 import React, { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 window.Buffer = Buffer;
-
 import './App.css';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, Provider, web3 } from '@project-serum/anchor';
-
+import './script.jsx';
 import idl from './idl.json';
 import kp from './keypair.json';
+import Dropdown from 'react-dropdown';
+import photo from './diplome.jpg';
 
-// SystemProgram is a reference to the Solana runtime!
+// solana 
 const { SystemProgram, Keypair } = web3;
 
-// Create a keypair for the account that will hold the GIF data.
+
+// accès au keypair for the account that will hold the Diplome data.
 const arr = Object.values(kp._keypair.secretKey);
 const secret = new Uint8Array(arr);
 const baseAccount = web3.Keypair.fromSecretKey(secret);
 
-// Get our program's id from the IDL file.
+// accès à notre programme id  grace au IDL file.
 const programID = new PublicKey(idl.metadata.address);
 
 // Set our network to devnet.
@@ -28,21 +32,179 @@ const opts = {
 	preflightCommitment: 'processed'
 };
 
-// All your other Twitter and GIF constants you had.
+
 
 
 
 const App = () => {
+  
 	// State
 	const [walletAddress, setWalletAddress] = useState(null);
 	const [inputValue, setInputValue] = useState('');
-	const [gifList, setGifList] = useState([]);
-
+  const [inputs, setInputs] = useState('');
+	const [diplomeList, setDiplomeList] = useState([]);
+  const [autorisation, setAutorisation] = useState([]);
   // State pour savoir si Admin, User ou pas
-  const [Admin, setAdmin] = useState(false);
-  const [User, setUser] = useState(false);
+	const [Admin, setAdmin] = useState(false);
+	const [User, setUser] = useState(false);
+	// Form admin
+  const form = document.getElementById('form');
+  const nom = document.getElementById('nom');
+  const prenom = document.getElementById('prenom');
+  const date = document.getElementById('date');
+  const formation = document.getElementById('formation');
+  const distinction = document.getElementById('distinction');
+  
+  const [verifnom, setVerifnom] = useState(true);
+  const [verifprenom, setVerifprenom] = useState(true);
+  const [verifdate, setVerifdate] = useState(true);
+  const [verifformation, setVerifformation] = useState(true);
+  const [verifdistinction, setVerifdistinction] = useState(true);
+  const [envoyer, setEnvoyer] = useState(0);// 0 etat de base 
+                                            // 1=envoyé 
+                                            // -1 echec 
 
-	// Actions
+
+  
+// ******************FCT ADMIN******************************************************************************
+
+    //_____________________form admin ____________________
+
+  // Vérification des inputs pour le formulaire admin 
+  function checkInputs() {
+    
+  setVerifnom(false);
+  setVerifprenom(false);
+  setVerifdate(false);
+  setVerifformation(false);
+  setVerifdistinction(false);
+  //sendDiplome();
+ 
+	// trim to remove the whitespaces
+	const nameValue = nom.value.trim();
+	const prenomValue = prenom.value;
+	const dateValue = date.value;
+	const formationValue = formation.value;
+  const distinctionValue = distinction.value;
+	
+	if(nameValue === '') {
+		setErrorFor(nom, 'Veuillez remplir ce champ !');
+   
+	} else {
+		setSuccessFor(nom);
+   
+    setVerifnom(true);
+	}
+		if(prenomValue === '') {
+		setErrorFor(prenom, 'Veuillez remplir ce champ !');
+    
+	} else {
+		setSuccessFor(prenom);
+    setVerifprenom(true);
+	}
+  	if(dateValue === '') {
+		setErrorFor(date, 'Veuillez remplir ce champ !');
+    
+	} else {
+		setSuccessFor(date);
+    setVerifdate(true);
+    
+	}
+  	if(formationValue === '') {
+		setErrorFor(formation, 'Veuillez remplir ce champ !');
+    
+	} else {
+    setSuccessFor(formation);
+    setVerifformation(true);
+		
+	}
+  	if(distinctionValue === '') {
+		setErrorFor(distinction, 'Veuillez remplir ce champ !');
+    
+	} else {
+		setSuccessFor(distinction);
+    setVerifdistinction(true);
+   
+	}
+  
+}
+
+  // messages Erreurs Success due à la vérification dans checkInputs
+  function setErrorFor(input, message) {
+	const formControl = input.parentElement;
+	const small = formControl.querySelector('small');
+	formControl.className = 'form-control error';
+	small.innerText = message;
+}
+
+  function setSuccessFor(input) {
+	const formControl = input.parentElement;
+	formControl.className = 'form-control success';
+}
+
+  // gestion des inputs et création de la variable diplome
+	const handleChange = event => {
+		const name = event.target.name;
+		const value = event.target.value;
+		setInputs(values => ({ ...values, [name]: value }));
+		let diplome =
+			inputs.nom +
+			'///' +
+			inputs.prenom +
+			'///' +
+			inputs.date +
+			'///' +
+			inputs.formation +
+			'///' +
+			inputs.distinction +
+			'';
+		setInputValue(diplome);
+	};
+  const onInputChange = event => {
+		const { value } = event.target;
+		setInputValue(value);
+	};
+  
+  //_____________________ Envois Diplome ____________________
+  const sendDiplome = async () => {
+    
+    
+    if(verifnom===false || verifprenom===false || verifdate===false || verifformation===false || verifdistinction===false){
+      return;
+    }
+		if (inputValue.length === 0) {
+			console.log('No diplome given!');
+			return;
+		}
+    
+		setInputValue('');
+		console.log('Diplomevar:', inputValue);
+		try {
+      
+			const provider = getProvider();
+			const program = new Program(idl, programID, provider);
+      
+			await program.rpc.addDiplome(inputValue, {
+				accounts: {
+					baseAccount: baseAccount.publicKey,
+					user: provider.wallet.publicKey
+				}
+			});
+			console.log('Diplome successfully sent to program', inputValue);
+      setEnvoyer(1);
+      
+      setInputValue('');
+
+			await getDiplomeList();
+		} catch (error) {
+			console.log('Error sending Diplome:', error);
+      setEnvoyer(-1);
+		}
+	};
+
+  //_____________________portefeuille et accès  ____________________
+  
+	// verifier si connecter au portefeuille
 	const checkIfWalletIsConnected = async () => {
 		try {
 			const { solana } = window;
@@ -62,7 +224,7 @@ const App = () => {
 					setWalletAddress(response.publicKey.toString());
 				}
 			} else {
-				alert('Solana object not found! Get a Phantom Wallet 👻');
+				console.log('Solana object not found! Get a Phantom Wallet 👻');
 			}
 		} catch (error) {
 			console.error(error);
@@ -78,35 +240,7 @@ const App = () => {
 			setWalletAddress(response.publicKey.toString());
 		}
 	};
-	const sendGif = async () => {
-		if (inputValue.length === 0) {
-			console.log('No gif link given!');
-			return;
-		}
-		setInputValue('');
-		console.log('Gif link:', inputValue);
-		try {
-			const provider = getProvider();
-			const program = new Program(idl, programID, provider);
-
-			await program.rpc.addGif(inputValue, {
-				accounts: {
-					baseAccount: baseAccount.publicKey,
-					user: provider.wallet.publicKey
-				}
-			});
-			console.log('GIF successfully sent to program', inputValue);
-
-			await getGifList();
-		} catch (error) {
-			console.log('Error sending GIF:', error);
-		}
-	};
-
-	const onInputChange = event => {
-		const { value } = event.target;
-		setInputValue(value);
-	};
+	
 	const getProvider = () => {
 		const connection = new Connection(network, opts.preflightCommitment);
 		const provider = new Provider(
@@ -116,7 +250,11 @@ const App = () => {
 		);
 		return provider;
 	};
-	const createGifAccount = async () => {
+  
+
+//__________________Première initialisation du site_______________
+  
+	const createDiplomeAccount = async () => {
 		try {
 			const provider = getProvider();
 			const program = new Program(idl, programID, provider);
@@ -133,12 +271,18 @@ const App = () => {
 				'Created a new BaseAccount w/ address:',
 				baseAccount.publicKey.toString()
 			);
-			await getGifList();
+			await getDiplomeList();
+      await getAutorisation();
 		} catch (error) {
 			console.log('Error creating BaseAccount account:', error);
 		}
 	};
 
+
+  
+// ****************** AFFICHAGE ADMIN*****************************************************************************
+
+  //__________________ Affichage si pas connecté _______________
 	const renderNotConnectedContainer = () => (
 		<button
 			className="cta-button connect-wallet-button"
@@ -148,47 +292,171 @@ const App = () => {
 		</button>
 	);
 
+    //__________________ Affichage si connecté _______________
+
 	const renderConnectedContainer = () => {
-		// If we hit this, it means the program account hasn't been initialized.
-		if (gifList === null) {
+    
+    
+		if (diplomeList === null) { // pas encore d'initialisation 
 			return (
 				<div className="connected-container">
 					<button
-						className="cta-button submit-gif-button"
-						onClick={createGifAccount}
+						className="cta-button submit-diplome-button"
+						onClick={createDiplomeAccount}
 					>
-						Do One-Time Initialization For GIF Program Account
+						Do One-Time Initialization For Diplome Program Account
 					</button>
 				</div>
 			);
 		}
-		//  compte administrateur si portefeuille connecté .
+      // pas l'autorisation 
+      if(! autorisation.includes(walletAddress.toString())){ 
+        return(
+          <div className="connected-container">
+		  		  <h1> Vous n'êtes pas autorisé à utiliser cette ressource</h1>
+            <p> {"Les portefeuilles autorisés : " } </p>
+            <ol>
+      {autorisation.map(portefeuille => (
+        <li key={portefeuille}>{portefeuille}</li>
+      ))}
+            </ol>
+      
+            <p> Votre portefeuille</p>
+            <p>{""+ walletAddress.toString()}</p>
+			  	</div>
+         )
+      }
+		//  compte administrateur si portefeuille connecté et autorisé  .
 		else {
-			return (
-				<div className="connected-container">
-					<form
+      // echec de l'envoi 
+       if(envoyer===-1){
+         return(
+           <div>
+            <h1> Echec </h1>
+            <button onClick={() => setEnvoyer(0)}> Reessayer </button>
+           </div>
+         );
+       }
+      // envoi réussi 
+      if(envoyer===1){
+        return(
+          <div>
+            <h1> Diplome envoyé </h1>
+            <button onClick={() => setEnvoyer(0)}> Envoyer un autre diplome </button>
+          </div>
+          );
+       }
+      
+      
+      // pas encore envoyé 
+      if(envoyer===0){ 
+			 return (
+        
+				<div className="formulaireRecherche">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+					<form id="form" class="form"
 						onSubmit={event => {
 							event.preventDefault();
-							sendGif();
-						}}
+              checkInputs(); 
+              sendDiplome();           
+						  }
+             }
 					>
-						<input
-							type="text"
-							placeholder="Entrer un diplome!"
-							value={inputValue}
-							onChange={onInputChange}
-						/>
-						<button type="submit" className="cta-button submit-gif-button">
-							Submit
-						</button>
+           <div class="form-control">
+						<label>
+							Entrer le nom:
+              </label>
+							<input
+                id="nom"
+								type="text"
+								name="nom"
+								placeholder="Nom"
+								value={inputs.nom || ''}
+								onChange={handleChange}
+							/>
+              <i class="fas fa-check-circle"></i>
+			        <i class="fas fa-exclamation-circle"></i>
+			        <small> Error message </small>
+						</div>
+            <div class="form-control">
+						<label>
+							Entrer le prénom:
+              </label>
+							<input
+                id="prenom"
+								type="text"
+								name="prenom"
+								placeholder="Prénom"
+								value={inputs.prenom || ''}
+								onChange={handleChange}
+							/>
+              <i class="fas fa-check-circle"></i>
+			        <i class="fas fa-exclamation-circle"></i>
+			        <small> Error message </small>
+						</div>
+            <div class="form-control">
+						<label>
+							Entrer la date:
+              </label>
+							<input
+                id="date"
+								type="date"
+								name="date"
+								placeholder="Date.."
+								value={inputs.date || ''}
+								onChange={handleChange}
+							/>
+             
+			        <i class="fas fa-exclamation-circle"></i>
+			        <small> Error message </small>
+						</div>
+            <div class="form-control">
+						<label>
+							Entrer la formation:
+              </label>
+							<input
+                id="formation"
+								type="text"
+								name="formation"
+								placeholder="Formation"
+								value={inputs.formation || ''}
+								onChange={handleChange}
+							/>
+              <i class="fas fa-check-circle"></i>
+			        <i class="fas fa-exclamation-circle"></i>
+			        <small> Error message </small>
+						</div>
+
+            
+            <div class="form-control">
+						<label>
+							Entrer la distinction:
+              </label>
+               
+              <select id="distinction" name="distinction"  >
+                 
+              <option value="SM" >Sans Mention onChange={(e) => handleChange(e)}</option>
+              <option value="S">onChange={(e) => handleChange(e)}>Satisfaction </option>
+              <option value="D"onChange={(e) => handleChange(e)}>Distinction </option>
+              <option value="GD" onChange={(e) => handleChange(e)}>Grande distinction</option>
+              <option value="LPGD" onChange={(e) => handleChange(e)}>La plus grande distinction</option>
+              </select>              
+			        <i class="fas fa-exclamation-circle"></i>
+              <small> Error message </small>
+						</div>
+
+						<input type="submit" />
 					</form>
-					
 				</div>
 			);
 		}
+    }
 	};
 
-	// UseEffects
+
+  
+	// ****************** FCT Recuperation de SOLANA ****************************************************************
+  
 	useEffect(() => {
 		const onLoad = async () => {
 			await checkIfWalletIsConnected();
@@ -196,7 +464,8 @@ const App = () => {
 		window.addEventListener('load', onLoad);
 		return () => window.removeEventListener('load', onLoad);
 	}, []);
-	const getGifList = async () => {
+   // Récupération de la liste de diplomes 
+	const getDiplomeList = async () => {
 		try {
 			const provider = getProvider();
 			const program = new Program(idl, programID, provider);
@@ -205,115 +474,216 @@ const App = () => {
 			);
 
 			console.log('Got the account', account);
-			setGifList(account.gifList);
+			setDiplomeList(account.diplomeList);
 		} catch (error) {
-			console.log('Error in getGifList: ', error);
-			setGifList(null);
+			console.log('Error in getDiplomeList: ', error);
+			setDiplomeList(null);
 		}
 	};
+   // Récupération des autorisations 
+  const getAutorisation = async () => {
+		try {
+			const provider = getProvider();
+			const program = new Program(idl, programID, provider);
+			const account = await program.account.baseAccount.fetch(
+				baseAccount.publicKey
+			);
 
+			console.log('Got the account', account);
+			setAutorisation(account.autorise);
+		} catch (error) {
+			console.log('Error in getAutorisation: ', error);
+			setDiplomeList(null);
+		}
+	};
+  
+
+  
+  // ****************** FCT VERIF USER  **************************************************************************
+	async function putElementDiplomeInList(inputs) {
+		const dataARenvoier = [];
+
+		for (var i = 0; i < diplomeList.length; i++) {
+			var listElementDiplome = diplomeList[i].diplomeVar.split('///');
+      console.log(inputs.prenom);
+			//Cas ou les 2 champs sont remplis
+			if (inputs.nom != undefined && inputs.prenom != undefined) {
+				if (
+					listElementDiplome[0] == inputs.nom &&
+					listElementDiplome[1] == inputs.prenom
+				) {
+					dataARenvoier.push(listElementDiplome);
+				}
+			}
+			//Cas ou le champ nom est rempli
+			if (inputs.nom != undefined && (inputs.prenom == undefined || inputs.prenom != "<empty string>")) {
+				if (listElementDiplome[0] == inputs.nom) {
+					dataARenvoier.push(listElementDiplome);
+				}
+			}
+			//Cas ou le champ prenom est rempli
+			if (inputs.nom == undefined && inputs.prenom != undefined) {
+				if (listElementDiplome[1] == inputs.prenom) {
+					dataARenvoier.push(listElementDiplome);
+				}
+			}
+		}
+
+		return [dataARenvoier];
+	}
+
+	// formulaire user 
+
+	function MyForm() {
+		const [inputs, setInputs] = useState({});
+
+		const handleChange = event => {
+			const name = event.target.name;
+			const value = event.target.value;
+			setInputs(values => ({ ...values, [name]: value }));
+		};
+
+		const handleSubmit = event => {
+			event.preventDefault();
+
+			var test = putElementDiplomeInList(inputs);
+
+			test.then(function(result) {
+				var personne = result[0];
+				const type = [
+					'Nom',
+					'Prenom',
+					'Date du diplome',
+					'Formation',
+					'Distinction'
+				];
+
+				for (let i = 0; i < personne.length; i++) {
+					var aAfficherTotal =
+						aAfficherTotal + '<br>' + '<b>Personne : ' + i + '</b> ✨<br>';
+					for (let j = 0; j < personne[i].length; j++) {
+						var aAfficher = personne[i][j];
+						console.log(aAfficher);
+						var aAfficherTotal =
+							aAfficherTotal + type[j] + ' : ' + aAfficher + '</br>';
+					}
+					var aAfficherTotal = aAfficherTotal + '</br></br></br>';
+				}
+				if (aAfficherTotal != undefined) {
+					aAfficherTotal = aAfficherTotal.replace('undefined', '');
+					document.getElementById('test').innerHTML = aAfficherTotal;
+				} else {
+					document.getElementById('test').innerHTML = 'Personne introuvable !';
+				}
+			});
+		};
+
+		return (
+			<form onSubmit={handleSubmit}>
+				<label>
+					Entrez le nom:
+					<input
+						type="text"
+						name="nom"
+						placeholder="Nom"
+						value={inputs.nom || ''}
+						onChange={handleChange}
+					/>
+				</label>
+				<label>
+					Entrez le prénom:
+					<input
+						type="text"
+						name="prenom"
+						placeholder="Prénom"
+						value={inputs.prenom || ''}
+						onChange={handleChange}
+					/>
+				</label>
+
+				<input type="submit" />
+				<div id="test" />
+			</form>
+		);
+	}
+	
+	//------------------------------------------------
 	useEffect(
 		() => {
 			if (walletAddress) {
-				console.log('Fetching GIF list...');
-				getGifList();
+				console.log('Fetching DIPLOME list...');
+				getDiplomeList();
+        console.log('Fetching autorisation');
+        getAutorisation();
+			} else {
+				getDiplomeList();
+        getAutorisation();
+        
 			}
 		},
 		[walletAddress]
 	);
-  
-  // ________USER
-  if(User){ return (
 
-  <header style={{color:'white'}}>
-    <button onClick={() => setUser(false)} > X </button>
-		<div>
-			<h3>Rechercher un diplôme</h3>
-			<p>En fonction d'un nom, d'un prénom, d'une université et/ou d'une année</p>
-		</div>
-	// faire un formulaire react 
-    <div className="connected-container">
-					<form
-						onSubmit={event => {
-							event.preventDefault();
-							// ajouter ce que ca fait 
-						}}
-					>
-						<input
-							type="text"
-							placeholder="Nom"
-							value={inputValue}
-							onChange={onInputChange}
-						/>
-            <input
-							type="text"
-							placeholder="Prenom"
-							value={inputValue}
-							onChange={onInputChange}
-						/>
-            <input
-							type="text"
-							placeholder="Année"
-							value={inputValue}
-							onChange={onInputChange}
-						/>
-           
-						<button type="submit" className="cta-button submit-gif-button">
-							Valider
+
+
+  
+  // ****************** MENU   *******************************************************************************
+	// ________USER
+	if (User) {
+		return (
+			<header>
+				<button onClick={() => setUser(false)
+                               }> X </button>
+
+				<div className="formulaireRecherche">
+					<MyForm />
+				</div>
+			</header>
+		);
+	}
+
+	// ________ ADMIN ___________
+	if (Admin) {
+		return (
+			<div className="App">
+				<div className="header-container">
+					<button onClick={() => {setAdmin(false);setEnvoyer(0);}}> X </button>
+					<p className="header">Administrateur</p>
+					<p className="sub-text">Ajouter des diplomes ✨</p>
+				</div>
+        {/* pour se connecter au portefeuille si ce n'est pas le cas */}
+				{!walletAddress && renderNotConnectedContainer()}
+				{/* quand le portefeuille est connecté  */}
+				{walletAddress && renderConnectedContainer()}
+			</div>
+		);
+	}
+
+	//-------------- ACCUEIL________________-
+	if (!User & !Admin) {
+		return (
+			<div className="App">
+
+				<div className="container">
+          <h1> Bienvenue sur notre vérificateur de diplômes en ligne !</h1>
+           <img src={photo}  width="400" height="auto"  />
+          
+					<div className="header-container1">
+            <button
+							onClick={() => {
+								setUser(true);
+								putElementDiplomeInList();
+							}}
+						>
+							VERIFICATEUR
 						</button>
-					</form>
-      
-       // affichage 
-					<div className="gif-grid">
-						{/* We use index as the key instead, also, the src is now item.gifLink */}
-						{gifList.map((item, index) => (
-							<div className="gif-item" key={index}>
-								<p>{item.gifLink} </p>
-							</div>
-						))}
+						<button onClick={() => setAdmin(true)}>ADMINISTRATEUR</button>
+
 					</div>
 				</div>
-			
-  </header>
-  )}
-
-
-  
-  // ________ ADMIN ___________
-  if(Admin){
-    
-  return( 
-      <div className="header-container">
-          <button onClick={() => setAdmin(false)} > X </button>
-					<p className="header">Administrateur</p>
-					<p className="sub-text">
-						Ajouter des diplomes ✨
-					</p>
-					{!walletAddress && renderNotConnectedContainer()}
-					{/* We just need to add the inverse here! */}
-					{walletAddress && renderConnectedContainer()}
-				</div>)}
-
-
-
-  
-  //-------------- ACCUEIL________________-
-  if(!User & !Admin){
-	 return (
-		<div className="App">
-			<div className="container">
-				<div className="header-container">
-					<button onClick={() => setAdmin(true)} >
-							 ADMINISTRATEUR
-						</button>
-						<button onClick={() => setUser(true)} >
-							 VERIFICATEUR
-						</button>
-				</div>
-				
 			</div>
-		</div>
-	);}
+		);
+	}
 };
 
 export default App;
