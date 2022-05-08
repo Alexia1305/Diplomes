@@ -1,4 +1,4 @@
-//import 
+//import
 
 import React, { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
@@ -6,15 +6,15 @@ window.Buffer = Buffer;
 import './App.css';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, Provider, web3 } from '@project-serum/anchor';
-import './script.jsx';
 import idl from './idl.json';
 import kp from './keypair.json';
 import Dropdown from 'react-dropdown';
 import photo from './diplome.jpg';
+import im from './error.png';
+import imm from './dipenv.png';
 
-// solana 
+// solana
 const { SystemProgram, Keypair } = web3;
-
 
 // accès au keypair for the account that will hold the Diplome data.
 const arr = Object.values(kp._keypair.secretKey);
@@ -32,117 +32,109 @@ const opts = {
 	preflightCommitment: 'processed'
 };
 
-
-
-
-
 const App = () => {
-  
 	// State
 	const [walletAddress, setWalletAddress] = useState(null);
-	const [inputValue, setInputValue] = useState('');
-  const [inputs, setInputs] = useState('');
+	const [inputValue, setInputValue] = useState(' ');
+	const [inputs, setInputs] = useState('');
 	const [diplomeList, setDiplomeList] = useState([]);
-  const [autorisation, setAutorisation] = useState([]);
-  // State pour savoir si Admin, User ou pas
+	const [autorisation, setAutorisation] = useState([]);
+	// State pour savoir si Admin, User ou pas
 	const [Admin, setAdmin] = useState(false);
 	const [User, setUser] = useState(false);
-	// Form admin
-  const form = document.getElementById('form');
-  const nom = document.getElementById('nom');
-  const prenom = document.getElementById('prenom');
-  const date = document.getElementById('date');
-  const formation = document.getElementById('formation');
-  const distinction = document.getElementById('distinction');
-  
-  const [verifnom, setVerifnom] = useState(true);
-  const [verifprenom, setVerifprenom] = useState(true);
-  const [verifdate, setVerifdate] = useState(true);
-  const [verifformation, setVerifformation] = useState(true);
-  const [verifdistinction, setVerifdistinction] = useState(true);
-  const [envoyer, setEnvoyer] = useState(0);// 0 etat de base 
-                                            // 1=envoyé 
-                                            // -1 echec 
 
+	// Formulaire admin, initialisation des valeurs d'input
+	const form = document.getElementById('form');
+	const nom = document.getElementById('nom');
+	const prenom = document.getElementById('prenom');
+	const date = document.getElementById('date');
+	const formation = document.getElementById('formation');
+	const distinction = document.getElementById('distinction');
 
-  
-// ******************FCT ADMIN******************************************************************************
+	// initialisation des variables d'état pour la vérification des champs
+	const [verifnom, setVerifnom] = useState(false);
+	const [verifprenom, setVerifprenom] = useState(false);
+	const [verifdate, setVerifdate] = useState(false);
+	const [verifformation, setVerifformation] = useState(false);
+	const [verifdistinction, setVerifdistinction] = useState(false);
+	const [envoyer, setEnvoyer] = useState(0); // 0 etat de base
+	// 1=envoyé
+	// -1 echec
 
-    //_____________________form admin ____________________
+	// ******************FCT ADMIN******************************************************************************
 
-  // Vérification des inputs pour le formulaire admin 
-  function checkInputs() {
-    
-  setVerifnom(false);
-  setVerifprenom(false);
-  setVerifdate(false);
-  setVerifformation(false);
-  setVerifdistinction(false);
-  //sendDiplome();
- 
-	// trim to remove the whitespaces
-	const nameValue = nom.value.trim();
-	const prenomValue = prenom.value;
-	const dateValue = date.value;
-	const formationValue = formation.value;
-  const distinctionValue = distinction.value;
-	
-	if(nameValue === '') {
-		setErrorFor(nom, 'Veuillez remplir ce champ !');
-   
-	} else {
-		setSuccessFor(nom);
-   
-    setVerifnom(true);
+	//_____________________form admin ____________________
+
+	// Vérification des inputs pour le formulaire admin
+	function checkInputs() {
+		//on initialise les états des vérification sur false : au départ, tous les champs sont vides
+		setVerifnom(false);
+		setVerifprenom(false);
+		setVerifdate(false);
+		setVerifformation(false);
+		setVerifdistinction(false);
+		// le trim permet de retirer les espaces en fin et en début des inputs
+		// cela permet d'empecher les champs remplis par un espace d'être valides
+		const nameValue = nom.value.trim();
+		const prenomValue = prenom.value.trim();
+		const dateValue = date.value.trim();
+		const formationValue = formation.value.trim();
+		const distinctionValue = distinction.value.trim();
+
+		if (nameValue === '') {
+			//si le champ est vide
+			setErrorFor(nom, 'Veuillez remplir ce champ !');
+			//on va dans la fonction setErrorFor pour ce champ et on affiche un message d'erreur
+		} else {
+			setSuccessFor(nom);
+			//si le champ est rempli, on va dans la fonction setSuccessFor pour ce champ
+			//on passe setVerifnom en true car c'est OK maintenant
+			setVerifnom(true);
+		}
+		if (prenomValue === '') {
+			setErrorFor(prenom, 'Veuillez remplir ce champ !');
+		} else {
+			setSuccessFor(prenom);
+			setVerifprenom(true);
+		}
+		if (dateValue === '') {
+			setErrorFor(date, 'Veuillez remplir ce champ !');
+		} else {
+			setSuccessFor(date);
+			setVerifdate(true);
+		}
+		if (formationValue === '') {
+			setErrorFor(formation, 'Veuillez remplir ce champ !');
+		} else {
+			setSuccessFor(formation);
+			setVerifformation(true);
+		}
+		if (distinctionValue === '') {
+			setErrorFor(distinction, 'Veuillez remplir ce champ !');
+		} else {
+			setSuccessFor(distinction);
+			setVerifdistinction(true);
+		}
 	}
-		if(prenomValue === '') {
-		setErrorFor(prenom, 'Veuillez remplir ce champ !');
-    
-	} else {
-		setSuccessFor(prenom);
-    setVerifprenom(true);
-	}
-  	if(dateValue === '') {
-		setErrorFor(date, 'Veuillez remplir ce champ !');
-    
-	} else {
-		setSuccessFor(date);
-    setVerifdate(true);
-    
-	}
-  	if(formationValue === '') {
-		setErrorFor(formation, 'Veuillez remplir ce champ !');
-    
-	} else {
-    setSuccessFor(formation);
-    setVerifformation(true);
-		
-	}
-  	if(distinctionValue === '') {
-		setErrorFor(distinction, 'Veuillez remplir ce champ !');
-    
-	} else {
-		setSuccessFor(distinction);
-    setVerifdistinction(true);
-   
-	}
-  
-}
 
-  // messages Erreurs Success due à la vérification dans checkInputs
-  function setErrorFor(input, message) {
-	const formControl = input.parentElement;
-	const small = formControl.querySelector('small');
-	formControl.className = 'form-control error';
-	small.innerText = message;
-}
+	// messages Erreurs ou Success dus à la vérification dans checkInputs
+	function setErrorFor(input, message) {
+		//fonction erreur définie pour tous les inputs donc via parentElement (variable globale)
+		const formControl = input.parentElement;
+		const small = formControl.querySelector('small');
+		formControl.className = 'form-control error';
+		//afin d'afficher l'erreur via la pertie css
+		small.innerText = message;
+	}
 
-  function setSuccessFor(input) {
-	const formControl = input.parentElement;
-	formControl.className = 'form-control success';
-}
+	function setSuccessFor(input) {
+		//pareil ici mais cette fois sans message d'erreur à afficher
+		const formControl = input.parentElement;
+		formControl.className = 'form-control success';
+	}
 
-  // gestion des inputs et création de la variable diplome
+	// gestion des inputs et création de la variable diplome
+	// ici on met les inputs dans une variable de superposition où elles sont séparées par des "///" dans la variable diplome
 	const handleChange = event => {
 		const name = event.target.name;
 		const value = event.target.value;
@@ -160,30 +152,51 @@ const App = () => {
 			'';
 		setInputValue(diplome);
 	};
-  const onInputChange = event => {
+	// dernière mise à jour lors de la validation
+	// sinon il manquait une lettre au dernier champ rempli, donc on met à jour les valeurs entrées pour les avoir en entier
+	const handleChangeEnd = () => {
+		let diplome =
+			inputs.nom +
+			'///' +
+			inputs.prenom +
+			'///' +
+			inputs.date +
+			'///' +
+			inputs.formation +
+			'///' +
+			inputs.distinction +
+			'';
+		setInputValue(diplome);
+	};
+	const onInputChange = event => {
 		const { value } = event.target;
 		setInputValue(value);
 	};
-  
-  //_____________________ Envois Diplome ____________________
-  const sendDiplome = async () => {
-    
-    
-    if(verifnom===false || verifprenom===false || verifdate===false || verifformation===false || verifdistinction===false){
-      return;
-    }
+
+	//_____________________ Envois Diplome ____________________
+	const sendDiplome = async () => {
+		//on vérifie si les champs sont tous remplis par des valeurs
+		if (
+			verifnom === false ||
+			verifprenom === false ||
+			verifdate === false ||
+			verifformation === false ||
+			verifdistinction === false
+		) {
+			return;
+		}
+		//si la valeur de l'input est de taille 0, on ne permet pas la transaction et on affiche un message dans la console
 		if (inputValue.length === 0) {
 			console.log('No diplome given!');
 			return;
 		}
-    
+
 		setInputValue('');
 		console.log('Diplomevar:', inputValue);
 		try {
-      
 			const provider = getProvider();
 			const program = new Program(idl, programID, provider);
-      
+
 			await program.rpc.addDiplome(inputValue, {
 				accounts: {
 					baseAccount: baseAccount.publicKey,
@@ -191,19 +204,19 @@ const App = () => {
 				}
 			});
 			console.log('Diplome successfully sent to program', inputValue);
-      setEnvoyer(1);
-      
-      setInputValue('');
+			setEnvoyer(1);
+
+			setInputValue('');
 
 			await getDiplomeList();
 		} catch (error) {
 			console.log('Error sending Diplome:', error);
-      setEnvoyer(-1);
+			setEnvoyer(-1);
 		}
 	};
 
-  //_____________________portefeuille et accès  ____________________
-  
+	//_____________________portefeuille et accès  ____________________
+
 	// verifier si connecter au portefeuille
 	const checkIfWalletIsConnected = async () => {
 		try {
@@ -240,7 +253,7 @@ const App = () => {
 			setWalletAddress(response.publicKey.toString());
 		}
 	};
-	
+
 	const getProvider = () => {
 		const connection = new Connection(network, opts.preflightCommitment);
 		const provider = new Provider(
@@ -250,10 +263,9 @@ const App = () => {
 		);
 		return provider;
 	};
-  
 
-//__________________Première initialisation du site_______________
-  
+	//__________________Première initialisation du site_______________
+
 	const createDiplomeAccount = async () => {
 		try {
 			const provider = getProvider();
@@ -272,32 +284,28 @@ const App = () => {
 				baseAccount.publicKey.toString()
 			);
 			await getDiplomeList();
-      await getAutorisation();
+			await getAutorisation();
 		} catch (error) {
 			console.log('Error creating BaseAccount account:', error);
 		}
 	};
 
+	// ****************** AFFICHAGE ADMIN*****************************************************************************
 
-  
-// ****************** AFFICHAGE ADMIN*****************************************************************************
-
-  //__________________ Affichage si pas connecté _______________
+	//__________________ Affichage si pas connecté _______________
 	const renderNotConnectedContainer = () => (
-		<button
-			className="cta-button connect-wallet-button"
-			onClick={connectWallet}
-		>
-			Connect to Wallet
-		</button>
+		<div className="message">
+			<button className="connect-wallet-button" onClick={connectWallet}>
+				Connect to Wallet
+			</button>
+		</div>
 	);
 
-    //__________________ Affichage si connecté _______________
+	//__________________ Affichage si connecté _______________
 
 	const renderConnectedContainer = () => {
-    
-    
-		if (diplomeList === null) { // pas encore d'initialisation 
+		if (diplomeList === null) {
+			// pas encore d'initialisation
 			return (
 				<div className="connected-container">
 					<button
@@ -309,154 +317,161 @@ const App = () => {
 				</div>
 			);
 		}
-      // pas l'autorisation 
-      if(! autorisation.includes(walletAddress.toString())){ 
-        return(
-          <div className="connected-container">
-		  		  <h1> Vous n'êtes pas autorisé à utiliser cette ressource</h1>
-            <p> {"Les portefeuilles autorisés : " } </p>
-            <ol>
-      {autorisation.map(portefeuille => (
-        <li key={portefeuille}>{portefeuille}</li>
-      ))}
-            </ol>
-      
-            <p> Votre portefeuille</p>
-            <p>{""+ walletAddress.toString()}</p>
-			  	</div>
-         )
-      }
-		//  compte administrateur si portefeuille connecté et autorisé  .
-		else {
-      // echec de l'envoi 
-       if(envoyer===-1){
-         return(
-           <div>
-            <h1> Echec </h1>
-            <button onClick={() => setEnvoyer(0)}> Reessayer </button>
-           </div>
-         );
-       }
-      // envoi réussi 
-      if(envoyer===1){
-        return(
-          <div>
-            <h1> Diplome envoyé </h1>
-            <button onClick={() => setEnvoyer(0)}> Envoyer un autre diplome </button>
-          </div>
-          );
-       }
-      
-      
-      // pas encore envoyé 
-      if(envoyer===0){ 
-			 return (
-        
-				<div className="formulaireRecherche">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-					<form id="form" class="form"
-						onSubmit={event => {
-							event.preventDefault();
-              checkInputs(); 
-              sendDiplome();           
-						  }
-             }
-					>
-           <div class="form-control">
-						<label>
-							Entrer le nom:
-              </label>
-							<input
-                id="nom"
-								type="text"
-								name="nom"
-								placeholder="Nom"
-								value={inputs.nom || ''}
-								onChange={handleChange}
-							/>
-              <i class="fas fa-check-circle"></i>
-			        <i class="fas fa-exclamation-circle"></i>
-			        <small> Error message </small>
-						</div>
-            <div class="form-control">
-						<label>
-							Entrer le prénom:
-              </label>
-							<input
-                id="prenom"
-								type="text"
-								name="prenom"
-								placeholder="Prénom"
-								value={inputs.prenom || ''}
-								onChange={handleChange}
-							/>
-              <i class="fas fa-check-circle"></i>
-			        <i class="fas fa-exclamation-circle"></i>
-			        <small> Error message </small>
-						</div>
-            <div class="form-control">
-						<label>
-							Entrer la date:
-              </label>
-							<input
-                id="date"
-								type="date"
-								name="date"
-								placeholder="Date.."
-								value={inputs.date || ''}
-								onChange={handleChange}
-							/>
-             
-			        <i class="fas fa-exclamation-circle"></i>
-			        <small> Error message </small>
-						</div>
-            <div class="form-control">
-						<label>
-							Entrer la formation:
-              </label>
-							<input
-                id="formation"
-								type="text"
-								name="formation"
-								placeholder="Formation"
-								value={inputs.formation || ''}
-								onChange={handleChange}
-							/>
-              <i class="fas fa-check-circle"></i>
-			        <i class="fas fa-exclamation-circle"></i>
-			        <small> Error message </small>
-						</div>
+		// pas l'autorisation
+		if (!autorisation.includes(walletAddress.toString())) {
+			return (
+				<div className="connected-container">
+					<h1> Vous n'êtes pas autorisé à utiliser cette ressource</h1>
+					<p> {'Les portefeuilles autorisés : '} </p>
+					<ol>
+						{autorisation.map(portefeuille => (
+							<li key={portefeuille}>{portefeuille}</li>
+						))}
+					</ol>
 
-            
-            <div class="form-control">
-						<label>
-							Entrer la distinction:
-              </label>
-               
-              <select id="distinction" name="distinction"  >
-                 
-              <option value="SM" >Sans Mention onChange={(e) => handleChange(e)}</option>
-              <option value="S">onChange={(e) => handleChange(e)}>Satisfaction </option>
-              <option value="D"onChange={(e) => handleChange(e)}>Distinction </option>
-              <option value="GD" onChange={(e) => handleChange(e)}>Grande distinction</option>
-              <option value="LPGD" onChange={(e) => handleChange(e)}>La plus grande distinction</option>
-              </select>              
-			        <i class="fas fa-exclamation-circle"></i>
-              <small> Error message </small>
-						</div>
-
-						<input type="submit" />
-					</form>
+					<p> Votre portefeuille</p>
+					<p>{'' + walletAddress.toString()}</p>
 				</div>
 			);
 		}
-    }
+		//  compte administrateur si portefeuille connecté et autorisé  .
+		else {
+			// echec de l'envoi
+			if (envoyer === -1) {
+				return (
+					<div className="message">
+						<img src={im} height="auto" />
+						<p className="sub-text"> Echec de la transaction </p>
+						<button className="connect-button" onClick={() => setEnvoyer(0)}>
+							{' '}
+							REESSAYER{' '}
+						</button>
+					</div>
+				);
+			}
+			// envoi réussi
+			if (envoyer === 1) {
+				return (
+					<div className="message">
+						<img src={imm} height="auto" />
+						<h1> Diplome envoyé </h1>
+						<button className="connect-button" onClick={() => setEnvoyer(0)}>
+							{' '}
+							Envoyer un autre diplome{' '}
+						</button>
+					</div>
+				);
+			}
+
+			// pas encore envoyé
+			if (envoyer === 0) {
+				return (
+					<div className="formulaireRecherche">
+						<link
+							href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+							rel="stylesheet"
+						/>
+						<form
+							id="form"
+							class="form"
+							onSubmit={event => {
+								handleChangeEnd();
+								event.preventDefault();
+								checkInputs(); //on vérifie si les champs sont remplis
+								sendDiplome(); //on effectue l'envoi de diplômes conditionné par le checkInputs
+							}}
+						>
+							<div class="form-control">
+								<label>Entrer le nom:</label>
+								<input
+									id="nom"
+									type="text"
+									name="nom"
+									placeholder="Nom"
+									value={inputs.nom || ''}
+									onChange={handleChange}
+								/>
+								<i class="fas fa-check-circle" />
+								<i class="fas fa-exclamation-circle" />
+								<small> Error message </small>
+							</div>
+							<div class="form-control">
+								<label>Entrer le prénom:</label>
+								<input
+									id="prenom"
+									type="text"
+									name="prenom"
+									placeholder="Prénom"
+									value={inputs.prenom || ''}
+									onChange={handleChange}
+								/>
+								<i class="fas fa-check-circle" />
+								<i class="fas fa-exclamation-circle" />
+								<small> Error message </small>
+							</div>
+							<div class="form-control">
+								<label>Entrer la date:</label>
+								<input
+									id="date"
+									type="date"
+									name="date"
+									placeholder="Date.."
+									value={inputs.date || ''}
+									onChange={handleChange}
+								/>
+
+								<i class="fas fa-exclamation-circle" />
+								<small> Error message </small>
+							</div>
+							<div class="form-control">
+								<label>Entrer la formation:</label>
+								<input
+									id="formation"
+									type="text"
+									name="formation"
+									placeholder="Formation"
+									value={inputs.formation || ''}
+									onChange={handleChange}
+								/>
+								<i class="fas fa-check-circle" />
+								<i class="fas fa-exclamation-circle" />
+								<small> Error message </small>
+							</div>
+
+							<div class="form-control">
+								<label>Entrer la distinction:</label>
+								<input
+									id="distinction"
+									type="text"
+									name="distinction"
+									placeholder="Distinction"
+									value={inputs.distinction || ''}
+									onChange={handleChange}
+								/>
+
+								{/*<select id="distinction" name="distinction"  >
+                 
+              <option value="SM" onChange={handleChange}> Sans Mention </option>
+              <option value={inputs.distinction || 'S'} onChange={(e) => handleChange(e)}>Satisfaction </option>
+              <option value="D"onChange={(e) => handleChange(e)}>Distinction </option>
+              <option value="GD" onChange={(e) => handleChange(e)}>Grande distinction</option>
+              <option value="LPGD" onChange={(e) => handleChange(e)}>La plus grande distinction</option>
+              </select>  */}
+
+								<i class="fas fa-exclamation-circle" />
+								<small> Error message </small>
+							</div>
+
+							<input className="connect-button" type="submit" />
+						</form>
+					</div>
+				);
+			}
+		}
 	};
 
-
-  
 	// ****************** FCT Recuperation de SOLANA ****************************************************************
-  
+
 	useEffect(() => {
 		const onLoad = async () => {
 			await checkIfWalletIsConnected();
@@ -464,7 +479,7 @@ const App = () => {
 		window.addEventListener('load', onLoad);
 		return () => window.removeEventListener('load', onLoad);
 	}, []);
-   // Récupération de la liste de diplomes 
+	// Récupération de la liste de diplomes
 	const getDiplomeList = async () => {
 		try {
 			const provider = getProvider();
@@ -480,8 +495,8 @@ const App = () => {
 			setDiplomeList(null);
 		}
 	};
-   // Récupération des autorisations 
-  const getAutorisation = async () => {
+	// Récupération des autorisations
+	const getAutorisation = async () => {
 		try {
 			const provider = getProvider();
 			const program = new Program(idl, programID, provider);
@@ -496,16 +511,14 @@ const App = () => {
 			setDiplomeList(null);
 		}
 	};
-  
 
-  
-  // ****************** FCT VERIF USER  **************************************************************************
+	// ****************** FCT VERIF USER  **************************************************************************
 	async function putElementDiplomeInList(inputs) {
 		const dataARenvoier = [];
 
 		for (var i = 0; i < diplomeList.length; i++) {
 			var listElementDiplome = diplomeList[i].diplomeVar.split('///');
-      console.log(inputs.prenom);
+			console.log(inputs.prenom);
 			//Cas ou les 2 champs sont remplis
 			if (inputs.nom != undefined && inputs.prenom != undefined) {
 				if (
@@ -516,7 +529,10 @@ const App = () => {
 				}
 			}
 			//Cas ou le champ nom est rempli
-			if (inputs.nom != undefined && (inputs.prenom == undefined || inputs.prenom != "<empty string>")) {
+			if (
+				inputs.nom != undefined &&
+				(inputs.prenom == undefined || inputs.prenom != '<empty string>')
+			) {
 				if (listElementDiplome[0] == inputs.nom) {
 					dataARenvoier.push(listElementDiplome);
 				}
@@ -532,7 +548,7 @@ const App = () => {
 		return [dataARenvoier];
 	}
 
-	// formulaire user 
+	// formulaire user
 
 	function MyForm() {
 		const [inputs, setInputs] = useState({});
@@ -580,6 +596,8 @@ const App = () => {
 
 		return (
 			<form onSubmit={handleSubmit}>
+				<p className="h">VERIFICATEUR</p>
+				<p className="s"> Vérifiez l'authenticité de diplomes ✨</p>
 				<label>
 					Entrez le nom:
 					<input
@@ -601,39 +619,34 @@ const App = () => {
 					/>
 				</label>
 
-				<input type="submit" />
+				<input className="connect-button" type="submit" />
 				<div id="test" />
 			</form>
 		);
 	}
-	
+
 	//------------------------------------------------
 	useEffect(
 		() => {
 			if (walletAddress) {
 				console.log('Fetching DIPLOME list...');
 				getDiplomeList();
-        console.log('Fetching autorisation');
-        getAutorisation();
+				console.log('Fetching autorisation');
+				getAutorisation();
 			} else {
 				getDiplomeList();
-        getAutorisation();
-        
+				getAutorisation();
 			}
 		},
 		[walletAddress]
 	);
 
-
-
-  
-  // ****************** MENU   *******************************************************************************
+	// ****************** MENU   *******************************************************************************
 	// ________USER
 	if (User) {
 		return (
 			<header>
-				<button onClick={() => setUser(false)
-                               }> X </button>
+				<button onClick={() => setUser(false)}> X </button>
 
 				<div className="formulaireRecherche">
 					<MyForm />
@@ -647,11 +660,19 @@ const App = () => {
 		return (
 			<div className="App">
 				<div className="header-container">
-					<button onClick={() => {setAdmin(false);setEnvoyer(0);}}> X </button>
+					<button
+						onClick={() => {
+							setAdmin(false);
+							setEnvoyer(0);
+						}}
+					>
+						{' '}
+						X{' '}
+					</button>
 					<p className="header">Administrateur</p>
-					<p className="sub-text">Ajouter des diplomes ✨</p>
+					<p className="sub-text"> Ajouter des diplomes ✨</p>
 				</div>
-        {/* pour se connecter au portefeuille si ce n'est pas le cas */}
+				{/* pour se connecter au portefeuille si ce n'est pas le cas */}
 				{!walletAddress && renderNotConnectedContainer()}
 				{/* quand le portefeuille est connecté  */}
 				{walletAddress && renderConnectedContainer()}
@@ -663,13 +684,16 @@ const App = () => {
 	if (!User & !Admin) {
 		return (
 			<div className="App">
-
 				<div className="container">
-          <h1> Bienvenue sur notre vérificateur de diplômes en ligne !</h1>
-           <img src={photo}  width="400" height="auto"  />
-          
+					<h1 className="gradient-text" c>
+						{' '}
+						Bienvenue sur notre vérificateur de diplômes en ligne !
+					</h1>
+					<img src={photo} width="400" height="auto" />
+
 					<div className="header-container1">
-            <button
+						<button
+							className="connecttt-button"
 							onClick={() => {
 								setUser(true);
 								putElementDiplomeInList();
@@ -677,8 +701,9 @@ const App = () => {
 						>
 							VERIFICATEUR
 						</button>
-						<button onClick={() => setAdmin(true)}>ADMINISTRATEUR</button>
-
+						<button className="connecttt-button" onClick={() => setAdmin(true)}>
+							ADMINISTRATEUR
+						</button>
 					</div>
 				</div>
 			</div>

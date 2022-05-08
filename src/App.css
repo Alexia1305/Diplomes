@@ -1,10 +1,26 @@
 .App {
   height: 100vh;
-  background-color: #23798b;
+  background-color:#84cae6;
   overflow: scroll;
   text-align: center;
 }
-
+.message{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 30px 0 30px;
+  vertical-align: middle 
+}
+.message_button{
+  width:400px;
+  background: -webkit-linear-gradient(left, #0293ed, #eeff00);
+  background-size: 200% 200%;
+  animation: gradient-animation 4s ease infinite;
+  vertical-align: middle 
+  margin-left: auto;
+  margin-right: auto 
+  
+}
 .container {
   height: 100%;
   display: flex;
@@ -21,19 +37,31 @@
 }
 
 .header {
-  margin: 0;
+  magin:auto;
   font-size: 50px;
   font-weight: bold;
   color: white;
 }
-
+.h {
+  margin: auto;
+  font-size: 40px;
+  text-align: center;
+  font-weight: bold;
+  color: black;
+}
 .sub-text {
+  magin:auto;
   font-size: 25px;
   color: white;
 }
-
+.s {
+  margin: 15px;
+  font-size: 18px;
+  color: black;
+  text-align: center;
+}
 .gradient-text {
-  background: -webkit-linear-gradient(left, #60c657 30%, #35aee2 60%);
+  background: -webkit-linear-gradient(left, #4fb446 30%,#0293ed 60%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -54,10 +82,24 @@
 
 .connect-wallet-button {
   background: -webkit-linear-gradient(left, #60c657, #35aee2);
-  
-  background-size: 200% 200%;
+  margin : auto;
+  height: 45px;
+  background-size: 100% 200%;
   animation: gradient-animation 4s ease infinite;
-  
+  text-align:center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.connect-button {
+  background: -webkit-linear-gradient(left, #60c657, #35aee2);
+  height: 45px;
+  background-size: 100% 200%;
+  animation: gradient-animation 4s ease infinite;
+  margin : 10px 10px;
+  font-weight: bold;
+  font-size: 15px;
+
 }
 
 .submit-diplome-button {
@@ -65,6 +107,18 @@
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
   margin-left: 10px;
+  margin-left: auto;
+  margin-right: auto 
+}
+
+.connecttt-button {
+  background: -webkit-linear-gradient(left, #60c657, #35aee2);
+  height: 45px;
+  background-size: 100% 200%;
+  animation: gradient-animation 4s ease infinite;
+  margin : 10px 10px;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 .footer-container {
@@ -129,6 +183,14 @@
 
 .connected-container button {
   height: 50px;
+  margin_right:auto; 
+  margin_left:auto; 
+  
+}
+.button {
+  height: 50px;
+  margin_right:auto; 
+  margin_left:auto; 
 }
 .form-control {
 	margin-bottom: 10px;
@@ -190,3 +252,6 @@ img {
   margin-left: auto;
   margin-right: auto;
 }
+
+
+
