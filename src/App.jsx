@@ -517,12 +517,12 @@ const App = () => {
 		const dataARenvoier = [];
 
 		for (var i = 0; i < diplomeList.length; i++) {
-			var listElementDiplome = diplomeList[i].diplomeVar.split('///');
+			var listElementDiplome = diplomeList[i].diplomeVar.split('///'); // On prend l'entre numéro 1 dans les enregistrment fait avec Solana et on sépare les élements grace au ///
 			console.log(inputs.prenom);
 			//Cas ou les 2 champs sont remplis
 			if (inputs.nom != undefined && inputs.prenom != undefined) {
 				if (
-					listElementDiplome[0] == inputs.nom &&
+					listElementDiplome[0] == inputs.nom && // On compare si il y a un nom et un prenom qui correspond à un des diplome
 					listElementDiplome[1] == inputs.prenom
 				) {
 					dataARenvoier.push(listElementDiplome);
@@ -556,13 +556,13 @@ const App = () => {
 		const handleChange = event => {
 			const name = event.target.name;
 			const value = event.target.value;
-			setInputs(values => ({ ...values, [name]: value }));
+			setInputs(values => ({ ...values, [name]: value })); 
 		};
 
 		const handleSubmit = event => {
 			event.preventDefault();
 
-			var test = putElementDiplomeInList(inputs);
+			var test = putElementDiplomeInList(inputs); // Permet d'acceder au élement de type promise renvoier par putElementDiplomeInList(inputs) 
 
 			test.then(function(result) {
 				var personne = result[0];
@@ -572,8 +572,9 @@ const App = () => {
 					'Date du diplome',
 					'Formation',
 					'Distinction'
-				];
+				]; // Simple liste contenant les différentes informations des diplome
 
+        // AFFICHAGE DU RESULTATS DE LA FONCTION putElementDiplomeInList(inputs) 
 				for (let i = 0; i < personne.length; i++) {
 					var aAfficherTotal =
 						aAfficherTotal + '<br>' + '<b>Personne : ' + i + '</b> ✨<br>';
@@ -593,7 +594,7 @@ const App = () => {
 				}
 			});
 		};
-
+// Formulaire
 		return (
 			<form onSubmit={handleSubmit}>
 				<p className="h">VERIFICATEUR</p>
