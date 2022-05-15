@@ -8,13 +8,12 @@ import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, Provider, web3 } from '@project-serum/anchor';
 import idl from './idl.json';
 import kp from './keypair.json';
-import Dropdown from 'react-dropdown';
 import photo from './diplome.jpg';
 import im from './error.png';
 import imm from './dipenv.png';
 
 // solana
-const { SystemProgram, Keypair } = web3;
+const { SystemProgram } = web3;
 
 // accès au keypair for the account that will hold the Diplome data.
 const arr = Object.values(kp._keypair.secretKey);
@@ -44,7 +43,6 @@ const App = () => {
 	const [User, setUser] = useState(false);
 
 	// Formulaire admin, initialisation des valeurs d'input
-	const form = document.getElementById('form');
 	const nom = document.getElementById('nom');
 	const prenom = document.getElementById('prenom');
 	const date = document.getElementById('date');
@@ -218,11 +216,7 @@ const App = () => {
 			'';
 		setInputValue(diplome);
 	};
-   // Mise à jour de Input contennat le diplome 
-	const onInputChange = event => {
-		const { value } = event.target;
-		setInputValue(value);
-	};
+  
 
 	//_____________________ Envois Diplome ____________________
 	const sendDiplome = async () => {
@@ -519,6 +513,7 @@ const App = () => {
 	// ****************** FCT useEffect  ************************************************************
  // Vérification de la connection au portefuille et mise à jour de wallet à chaque changement de rendu 
 	useEffect(() => {
+    // fct asyncrone appelant checkIfWalletIsConnected
 		const onLoad = async () => {
 			await checkIfWalletIsConnected();
 		};
@@ -592,7 +587,7 @@ const App = () => {
 	// formulaire user
 	function MyForm() {
 		const [inputs, setInputs] = useState({});
-
+// mise à jour des inputs 
 		const handleChange = event => {
 			const name = event.target.name;
 			const value = event.target.value;
