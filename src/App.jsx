@@ -187,33 +187,14 @@ const App = () => {
 		const name = event.target.name;
 		const value = event.target.value;
 		setInputs(values => ({ ...values, [name]: value }));
-		let diplome =
-			inputs.nom +
-			'///' +
-			inputs.prenom +
-			'///' +
-			inputs.date +
-			'///' +
-			inputs.formation +
-			'///' +
-			inputs.distinction +
-			'';
+		let diplome = String(inputs.nom + '///' + inputs.prenom + '///' + inputs.date + '///' + inputs.formation + '///' + inputs.distinction);
 		setInputValue(diplome);
 	};
 	// dernière mise à jour lors de la validation
 	// sinon il manquait une lettre au dernier champ rempli, donc on met à jour les valeurs entrées pour les avoir en entier
 	const handleChangeEnd = () => {
 		let diplome =
-			inputs.nom +
-			'///' +
-			inputs.prenom +
-			'///' +
-			inputs.date +
-			'///' +
-			inputs.formation +
-			'///' +
-			inputs.distinction +
-			'';
+			String(inputs.nom + '///' + inputs.prenom + '///' + inputs.date + '///' + inputs.formation + '///' + inputs.distinction);
 		setInputValue(diplome);
 	};
   
