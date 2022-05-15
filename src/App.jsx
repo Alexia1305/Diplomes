@@ -413,7 +413,7 @@ const App = () => {
 						/>
 						<form
 							id="form"
-							class="form"
+							className="form"
 							onSubmit={event => {
 								handleChangeEnd();
 								event.preventDefault();
@@ -421,7 +421,7 @@ const App = () => {
 								sendDiplome(); //on effectue l'envoi de diplômes conditionné par le checkInputs
 							}}
 						>
-							<div class="form-control">
+							<div className="form-control">
 								<label>Entrer le nom:</label>
 								<input
 									id="nom"
@@ -431,11 +431,11 @@ const App = () => {
 									value={inputs.nom || ''}
 									onChange={handleChange}
 								/>
-								<i class="fas fa-check-circle" />
-								<i class="fas fa-exclamation-circle" />
+								<i className="fas fa-check-circle" />
+								<i className="fas fa-exclamation-circle" />
 								<small> Error message </small>
 							</div>
-							<div class="form-control">
+							<div className="form-control">
 								<label>Entrer le prénom:</label>
 								<input
 									id="prenom"
@@ -445,11 +445,11 @@ const App = () => {
 									value={inputs.prenom || ''}
 									onChange={handleChange}
 								/>
-								<i class="fas fa-check-circle" />
-								<i class="fas fa-exclamation-circle" />
+								<i className="fas fa-check-circle" />
+								<i className="fas fa-exclamation-circle" />
 								<small> Error message </small>
 							</div>
-							<div class="form-control">
+							<div className="form-control">
 								<label>Entrer la date:</label>
 								<input
 									id="date"
@@ -460,10 +460,10 @@ const App = () => {
 									onChange={handleChange}
 								/>
 
-								<i class="fas fa-exclamation-circle" />
+								<i className="fas fa-exclamation-circle" />
 								<small> Error message </small>
 							</div>
-							<div class="form-control">
+							<div className="form-control">
 								<label>Entrer la formation:</label>
 								<input
 									id="formation"
@@ -473,12 +473,12 @@ const App = () => {
 									value={inputs.formation || ''}
 									onChange={handleChange}
 								/>
-								<i class="fas fa-check-circle" />
-								<i class="fas fa-exclamation-circle" />
+								<i className="fas fa-check-circle" />
+								<i className="fas fa-exclamation-circle" />
 								<small> Error message </small>
 							</div>
 
-							<div class="form-control">
+							<div className="form-control">
 								<label>Entrer la distinction:</label>
 								<input
 									id="distinction"
@@ -498,7 +498,7 @@ const App = () => {
               <option value="LPGD" onChange={(e) => handleChange(e)}>La plus grande distinction</option>
               </select>  */}
 
-								<i class="fas fa-exclamation-circle" />
+								<i className="fas fa-exclamation-circle" />
 								<small> Error message </small>
 							</div>
 
