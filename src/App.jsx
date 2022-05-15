@@ -1,4 +1,4 @@
-//import
+react //import
 
 import React, { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
@@ -61,6 +61,55 @@ const App = () => {
 	// 1=envoyé
 	// -1 echec
 
+
+
+
+
+  //*************FCT Recuperation de SOLANA ********************************************$
+
+   // permet de créer la variable provider contenant toutes les informations sur l'utilisateur du portefeuille , Si l'ulisateur n'est pas connecté le provider peut être créé mais aucunes transactions ne poura se faire sans portfeuille valide. 
+	const getProvider = () => {
+		const connection = new Connection(network, opts.preflightCommitment);
+		const provider = new Provider(
+			connection,
+			window.solana,
+			opts.preflightCommitment
+		);
+		return provider;
+	};
+  
+  	// Récupération de la liste de diplomes
+	const getDiplomeList = async () => {
+		try {
+			const provider = getProvider();
+			const program = new Program(idl, programID, provider);
+			const account = await program.account.baseAccount.fetch(
+				baseAccount.publicKey
+			);
+     // console.log('provider',provider)
+			//console.log('Got the account', account);
+			setDiplomeList(account.diplomeList);
+		} catch (error) {
+			//console.log('Error in getDiplomeList: ', error);
+			setDiplomeList(null);
+		}
+	};
+	// Récupération des autorisations
+	const getAutorisation = async () => {
+		try {
+			const provider = getProvider();
+			const program = new Program(idl, programID, provider);
+			const account = await program.account.baseAccount.fetch(
+				baseAccount.publicKey
+			);
+
+		//	console.log('Got the account', account);
+			setAutorisation(account.autorise);
+		} catch (error) {
+		//	console.log('Error in getAutorisation: ', error);
+			setAutorisation(null);
+		}
+	};
 	// ******************FCT ADMIN******************************************************************************
 
 	//_____________________form admin ____________________
@@ -187,30 +236,30 @@ const App = () => {
 		}
 		//si la valeur de l'input est de taille 0, on ne permet pas la transaction et on affiche un message dans la console
 		if (inputValue.length === 0) {
-			console.log('No diplome given!');
+			//console.log('No diplome given!');
 			return;
 		}
 
 		setInputValue('');
-		console.log('Diplomevar:', inputValue);
+		//console.log('Diplomevar:', inputValue);
 		try {
 			const provider = getProvider();
 			const program = new Program(idl, programID, provider);
-
+      // on appelle la fonction du programme 
 			await program.rpc.addDiplome(inputValue, {
 				accounts: {
 					baseAccount: baseAccount.publicKey,
 					user: provider.wallet.publicKey
 				}
 			});
-			console.log('Diplome successfully sent to program', inputValue);
+			//console.log('Diplome successfully sent to program', inputValue);
 			setEnvoyer(1);
-
+     // on la vide 
 			setInputValue('');
 
-			await getDiplomeList();
+			await getDiplomeList(); // mise à jour 
 		} catch (error) {
-			console.log('Error sending Diplome:', error);
+		//	console.log('Error sending Diplome:', error);
 			setEnvoyer(-1);
 		}
 	};
@@ -224,12 +273,12 @@ const App = () => {
 
 			if (solana) {
 				if (solana.isPhantom) {
-					console.log('Phantom wallet found!');
+				//	console.log('Phantom wallet found!');
 					const response = await solana.connect({ onlyIfTrusted: true });
-					console.log(
+				/*	console.log(
 						'Connected with Public Key:',
 						response.publicKey.toString()
-					);
+					);*/
 
 					/*
            * Set the user's publicKey in state to be used later!
@@ -237,40 +286,35 @@ const App = () => {
 					setWalletAddress(response.publicKey.toString());
 				}
 			} else {
-				console.log('Solana object not found! Get a Phantom Wallet 👻');
+			//	console.log('Solana object not found! Get a Phantom Wallet 👻');
 			}
 		} catch (error) {
-			console.error(error);
+		//	console.error(error);
 		}
 	};
-
+  
+ // fonction asynchrone pour se connecter au portefeuille phantom
 	const connectWallet = async () => {
 		const { solana } = window;
 
 		if (solana) {
 			const response = await solana.connect();
-			console.log('Connected with Public Key:', response.publicKey.toString());
+		//	console.log('Connected with Public Key:', response.publicKey.toString());
 			setWalletAddress(response.publicKey.toString());
 		}
 	};
 
-	const getProvider = () => {
-		const connection = new Connection(network, opts.preflightCommitment);
-		const provider = new Provider(
-			connection,
-			window.solana,
-			opts.preflightCommitment
-		);
-		return provider;
-	};
 
 	//__________________Première initialisation du site_______________
-
+  
 	const createDiplomeAccount = async () => {
 		try {
+      // récupère info utilisateur 
 			const provider = getProvider();
+      // cree un nouveau programme 
 			const program = new Program(idl, programID, provider);
-			console.log('ping');
+		//	console.log('ping');
+      // appelle de la fonction d'initialisation 
 			await program.rpc.startStuffOff({
 				accounts: {
 					baseAccount: baseAccount.publicKey,
@@ -279,14 +323,14 @@ const App = () => {
 				},
 				signers: [baseAccount]
 			});
-			console.log(
+	/*		console.log(
 				'Created a new BaseAccount w/ address:',
 				baseAccount.publicKey.toString()
-			);
+			);*/
 			await getDiplomeList();
 			await getAutorisation();
 		} catch (error) {
-			console.log('Error creating BaseAccount account:', error);
+		//	console.log('Error creating BaseAccount account:', error);
 		}
 	};
 
@@ -470,7 +514,7 @@ const App = () => {
 		}
 	};
 
-	// ****************** FCT Recuperation de SOLANA ****************************************************************
+	// ****************** FCT useEffect  ************************************************************
 
 	useEffect(() => {
 		const onLoad = async () => {
@@ -479,38 +523,21 @@ const App = () => {
 		window.addEventListener('load', onLoad);
 		return () => window.removeEventListener('load', onLoad);
 	}, []);
-	// Récupération de la liste de diplomes
-	const getDiplomeList = async () => {
-		try {
-			const provider = getProvider();
-			const program = new Program(idl, programID, provider);
-			const account = await program.account.baseAccount.fetch(
-				baseAccount.publicKey
-			);
+  	// Récupération des données solana 
+	useEffect(
+		() => {
+		
+			//	console.log('Fetching DIPLOME list...');
+				getDiplomeList();
+			//	console.log('Fetching autorisation');
+				getAutorisation();
+		
+		},
+		[]
+	);
 
-			console.log('Got the account', account);
-			setDiplomeList(account.diplomeList);
-		} catch (error) {
-			console.log('Error in getDiplomeList: ', error);
-			setDiplomeList(null);
-		}
-	};
-	// Récupération des autorisations
-	const getAutorisation = async () => {
-		try {
-			const provider = getProvider();
-			const program = new Program(idl, programID, provider);
-			const account = await program.account.baseAccount.fetch(
-				baseAccount.publicKey
-			);
 
-			console.log('Got the account', account);
-			setAutorisation(account.autorise);
-		} catch (error) {
-			console.log('Error in getAutorisation: ', error);
-			setDiplomeList(null);
-		}
-	};
+  
 
 	// ****************** FCT VERIF USER  **************************************************************************
 	async function putElementDiplomeInList(inputs) {
@@ -518,31 +545,43 @@ const App = () => {
 
 		for (var i = 0; i < diplomeList.length; i++) {
 			var listElementDiplome = diplomeList[i].diplomeVar.split('///'); // On prend l'entre numéro 1 dans les enregistrment fait avec Solana et on sépare les élements grace au ///
-			console.log(inputs.prenom);
+			
 			//Cas ou les 2 champs sont remplis
 			if (inputs.nom != undefined && inputs.prenom != undefined) {
 				if (
 					listElementDiplome[0] == inputs.nom && // On compare si il y a un nom et un prenom qui correspond à un des diplome
 					listElementDiplome[1] == inputs.prenom
 				) {
-					dataARenvoier.push(listElementDiplome);
+          
+          if (dataARenvoier.includes(listElementDiplome)){
+            
+          }
+          else{
+            dataARenvoier.push(listElementDiplome);
+          }
+					
 				}
 			}
+      else{
 			//Cas ou le champ nom est rempli
+      //console.log(inputs.prenom);
 			if (
 				inputs.nom != undefined &&
 				(inputs.prenom == undefined || inputs.prenom != '<empty string>')
 			) {
 				if (listElementDiplome[0] == inputs.nom) {
 					dataARenvoier.push(listElementDiplome);
+        //  console.log("alert1");
 				}
 			}
 			//Cas ou le champ prenom est rempli
-			if (inputs.nom == undefined && inputs.prenom != undefined) {
+			if ((inputs.nom == undefined || inputs.nom != '<empty string>') && inputs.prenom != undefined) {
 				if (listElementDiplome[1] == inputs.prenom) {
 					dataARenvoier.push(listElementDiplome);
+        //  console.log("alert2");
 				}
 			}
+      }
 		}
 
 		return [dataARenvoier];
@@ -558,11 +597,11 @@ const App = () => {
 			const value = event.target.value;
 			setInputs(values => ({ ...values, [name]: value })); 
 		};
-
+  // Permet d'acceder au élement de type promise renvoier par putElementDiplomeInList(inputs) 
 		const handleSubmit = event => {
 			event.preventDefault();
 
-			var test = putElementDiplomeInList(inputs); // Permet d'acceder au élement de type promise renvoier par putElementDiplomeInList(inputs) 
+			var test = putElementDiplomeInList(inputs); 
 
 			test.then(function(result) {
 				var personne = result[0];
@@ -580,7 +619,7 @@ const App = () => {
 						aAfficherTotal + '<br>' + '<b>Personne : ' + i + '</b> ✨<br>';
 					for (let j = 0; j < personne[i].length; j++) {
 						var aAfficher = personne[i][j];
-						console.log(aAfficher);
+						
 						var aAfficherTotal =
 							aAfficherTotal + type[j] + ' : ' + aAfficher + '</br>';
 					}
@@ -626,21 +665,7 @@ const App = () => {
 		);
 	}
 
-	//------------------------------------------------
-	useEffect(
-		() => {
-			if (walletAddress) {
-				console.log('Fetching DIPLOME list...');
-				getDiplomeList();
-				console.log('Fetching autorisation');
-				getAutorisation();
-			} else {
-				getDiplomeList();
-				getAutorisation();
-			}
-		},
-		[walletAddress]
-	);
+
 
 	// ****************** MENU   *******************************************************************************
 	// ________USER
