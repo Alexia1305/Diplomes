@@ -1,4 +1,4 @@
-react //import
+ //import
 
 import React, { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
@@ -113,7 +113,22 @@ const App = () => {
 	// ******************FCT ADMIN******************************************************************************
 
 	//_____________________form admin ____________________
+  
+// messages Erreurs ou Success dus à la vérification dans checkInputs
+	function setErrorFor(input, message) {
+		//fonction erreur définie pour tous les inputs donc via parentElement (variable globale)
+		const formControl = input.parentElement;
+		const small = formControl.querySelector('small');
+		formControl.className = 'form-control error';
+		//afin d'afficher l'erreur via la pertie css
+		small.innerText = message;
+	}
 
+	function setSuccessFor(input) {
+		//pareil ici mais cette fois sans message d'erreur à afficher
+		const formControl = input.parentElement;
+		formControl.className = 'form-control success';
+	}
 	// Vérification des inputs pour le formulaire admin
 	function checkInputs() {
 		//on initialise les états des vérification sur false : au départ, tous les champs sont vides
@@ -166,21 +181,7 @@ const App = () => {
 		}
 	}
 
-	// messages Erreurs ou Success dus à la vérification dans checkInputs
-	function setErrorFor(input, message) {
-		//fonction erreur définie pour tous les inputs donc via parentElement (variable globale)
-		const formControl = input.parentElement;
-		const small = formControl.querySelector('small');
-		formControl.className = 'form-control error';
-		//afin d'afficher l'erreur via la pertie css
-		small.innerText = message;
-	}
-
-	function setSuccessFor(input) {
-		//pareil ici mais cette fois sans message d'erreur à afficher
-		const formControl = input.parentElement;
-		formControl.className = 'form-control success';
-	}
+	
 
 	// gestion des inputs et création de la variable diplome
 	// ici on met les inputs dans une variable de superposition où elles sont séparées par des "///" dans la variable diplome
@@ -217,6 +218,7 @@ const App = () => {
 			'';
 		setInputValue(diplome);
 	};
+   // Mise à jour de Input contennat le diplome 
 	const onInputChange = event => {
 		const { value } = event.target;
 		setInputValue(value);
@@ -515,7 +517,7 @@ const App = () => {
 	};
 
 	// ****************** FCT useEffect  ************************************************************
-
+ // Vérification de la connection au portefuille et mise à jour de wallet à chaque changement de rendu 
 	useEffect(() => {
 		const onLoad = async () => {
 			await checkIfWalletIsConnected();
@@ -523,7 +525,7 @@ const App = () => {
 		window.addEventListener('load', onLoad);
 		return () => window.removeEventListener('load', onLoad);
 	}, []);
-  	// Récupération des données solana 
+  	// Récupération des diplomes et autorisations à chaque changement d'affichage 
 	useEffect(
 		() => {
 		
@@ -588,7 +590,6 @@ const App = () => {
 	}
 
 	// formulaire user
-
 	function MyForm() {
 		const [inputs, setInputs] = useState({});
 
